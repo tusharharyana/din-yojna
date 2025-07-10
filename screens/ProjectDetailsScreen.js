@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { Swipeable } from "react-native-gesture-handler";
 import styles from "../styles/detailsStyles";
-
+import TaskItem from "../components/TaskItem";
+import RenameModal from "../components/RenameModal";
 
 const ProjectDetailsScreen = ({ route }) => {
   const { project, updateProject } = route.params;
@@ -69,26 +69,12 @@ const ProjectDetailsScreen = ({ route }) => {
   };
 
   const renderTask = ({ item }) => (
-    <Swipeable renderRightActions={() => renderRightActions(item.id)}>
-      <TouchableOpacity
-        onPress={() => toggleTask(item.id)}
-        onLongPress={() => openRenameModal(item.id, item.title)}
-      >
-        <View style={[styles.taskItem, item.completed && styles.completed]}>
-          <Text
-            style={[
-              styles.taskText,
-              item.completed && styles.taskTextCompleted,
-            ]}
-          >
-            {item.title}
-          </Text>
-          {item.completed && (
-            <AntDesign name="checkcircle" size={20} color="green" />
-          )}
-        </View>
-      </TouchableOpacity>
-    </Swipeable>
+    <TaskItem
+      task={item}
+      onToggle={toggleTask}
+      onDelete={deleteTask}
+      onRename={openRenameModal}
+    />
   );
   
 
@@ -148,28 +134,14 @@ const ProjectDetailsScreen = ({ route }) => {
           contentContainerStyle={{ paddingBottom: 100 }}
         />
       )}
-      {renameModalVisible && (
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Rename</Text>
-            <TextInput
-              style={styles.renameInput}
-              value={renameValue}
-              onChangeText={setRenameValue}
-              placeholder="Enter new name"
-              placeholderTextColor="#aaa"
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity onPress={() => setRenameModalVisible(false)}>
-                <Text style={styles.cancel}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleRename}>
-                <Text style={styles.save}>Save</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
+      <RenameModal
+        visible={renameModalVisible}
+        value={renameValue}
+        onChange={setRenameValue}
+        onClose={() => setRenameModalVisible(false)}
+        onSave={handleRename}
+        title="Rename"
+      />
     </View>
   );
 };
