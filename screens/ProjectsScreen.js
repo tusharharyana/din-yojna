@@ -62,6 +62,16 @@ const ProjectsScreen = ({ navigation }) => {
             })
           }
         >
+          <View style={styles.cardTopRow}>
+            <Text style={styles.meta}>
+              Created: {new Date(item.createdAt).toLocaleString()}
+            </Text>
+            {item.completedAt && (
+              <Text style={styles.meta}>
+                Completed: {new Date(item.completedAt).toLocaleString()}
+              </Text>
+            )}
+          </View>
           <Text style={styles.title}>{item.title}</Text>
           <Text>{summary}</Text>
           <View

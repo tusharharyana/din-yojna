@@ -105,4 +105,13 @@ export default StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
+  cardTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
+  meta: {
+    fontSize: 12,
+    color: "#666",
+  },
 });
