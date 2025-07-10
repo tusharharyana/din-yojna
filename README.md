@@ -49,3 +49,25 @@ git clone https://github.com/tusharharyana/din-yojna.git
 cd din-yojna
 npm install
 npx expo start
+```
+
+## Challenges Faced
+
+- This was the first app I created using Expo. Before this, I had only used Android Studio to run emulators and build native apps, so adapting to Expo’s workflow and ecosystem was a new learning experience.
+
+## What Could Be Improved
+While Din Yojna currently functions as a standard to-do and project management app, there is great potential to make it smarter with AI-powered features:
+
+- AI-Powered Task Suggestions: Automatically suggest tasks based on time of day, user behavior, or past project activity.
+
+- Priority Detection: Use natural language processing (NLP) to detect urgency or importance in task titles and flag them accordingly.
+
+- Conversational Task Entry: Allow users to input tasks using natural language — e.g., "Remind me to call mom tomorrow at 8 PM" — and have the app parse and schedule it automatically.
+
+- Smart Reminders: Notify users if a project is inactive for too long or if important deadlines are approaching.
+
+- OpenAI (Gemini) Integration: Connect to LLM APIs to provide personalized task insights, generate summaries, or offer task suggestions dynamically.
+
+I've already implemented some of these features in a separate project:
+[Smart To-Do List with AI](https://github.com/tusharharyana/smart-todo-list-with-AI).
+
