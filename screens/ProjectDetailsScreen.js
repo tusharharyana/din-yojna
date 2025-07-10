@@ -14,6 +14,9 @@ const ProjectDetailsScreen = ({ route }) => {
   const { project, updateProject } = route.params;
   const [tasks, setTasks] = useState(project.tasks);
   const [newTask, setNewTask] = useState("");
+  const [renameModalVisible, setRenameModalVisible] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const [renameTarget, setRenameTarget] = useState(null);
 
   const updateAndSync = (updatedTasks) => {
     setTasks(updatedTasks);
@@ -40,9 +43,36 @@ const ProjectDetailsScreen = ({ route }) => {
     setNewTask("");
   };
 
+  const openRenameModal = (target, currentValue) => {
+    setRenameTarget(target);
+    setRenameValue(currentValue);
+    setRenameModalVisible(true);
+  };
+
+  const handleRename = () => {
+    if (!renameValue.trim()) return;
+
+    if (renameTarget === "project") {
+      const updatedProject = { ...project, title: renameValue.trim() };
+      updateProject(updatedProject);
+    } else {
+      const updatedTasks = tasks.map((task) =>
+        task.id === renameTarget ? { ...task, title: renameValue.trim() } : task
+      );
+      updateAndSync(updatedTasks);
+    }
+
+    setRenameModalVisible(false);
+    setRenameValue("");
+    setRenameTarget(null);
+  };
+
   const renderTask = ({ item }) => (
     <Swipeable renderRightActions={() => renderRightActions(item.id)}>
-      <TouchableOpacity onPress={() => toggleTask(item.id)}>
+      <TouchableOpacity
+        onPress={() => toggleTask(item.id)}
+        onLongPress={() => openRenameModal(item.id, item.title)}
+      >
         <View style={[styles.taskItem, item.completed && styles.completed]}>
           <Text
             style={[
@@ -80,7 +110,12 @@ const ProjectDetailsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>{project.title}</Text>
+      <TouchableOpacity
+        onPress={() => openRenameModal("project", project.title)}
+      >
+        <Text style={styles.heading}>{project.title}</Text>
+      </TouchableOpacity>
+
       <View
         style={[
           styles.statusBadge,
@@ -111,6 +146,28 @@ const ProjectDetailsScreen = ({ route }) => {
           renderItem={renderTask}
           contentContainerStyle={{ paddingBottom: 100 }}
         />
+      )}
+      {renameModalVisible && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Rename</Text>
+            <TextInput
+              style={styles.renameInput}
+              value={renameValue}
+              onChangeText={setRenameValue}
+              placeholder="Enter new name"
+              placeholderTextColor="#aaa"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity onPress={() => setRenameModalVisible(false)}>
+                <Text style={styles.cancel}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleRename}>
+                <Text style={styles.save}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       )}
     </View>
   );
@@ -201,6 +258,52 @@ const styles = StyleSheet.create({
   taskDeleteText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  cancel: {
+    color: "red",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  save: {
+    color: "green",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  renameInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+    height: 40,
+    backgroundColor: "#f9f9f9",
+    fontSize: 16,
+    color: "#000",
   },
 });
 
