@@ -5,9 +5,11 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Modal,
   TextInput,
-  Button,
+  Pressable,
 } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { saveProjects, loadProjects } from "../utils/storage";
 
@@ -33,6 +35,7 @@ const initialProjects = [
 const ProjectsScreen = ({ navigation }) => {
   const [projects, setProjects] = useState([]);
   const [newProjectTitle, setNewProjectTitle] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -106,22 +109,67 @@ const ProjectsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>📋 DinYojna</Text>
+      <Text style={styles.header}>Din Yojna</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter new project name"
-        value={newProjectTitle}
-        onChangeText={setNewProjectTitle}
-      />
-      <Button title="Add Project" onPress={addProject} />
+      <Modal
+        visible={isModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>New Project</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Project name"
+              value={newProjectTitle}
+              onChangeText={setNewProjectTitle}
+            />
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Pressable onPress={() => setIsModalVisible(false)}>
+                <Text style={styles.cancel}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  if (newProjectTitle.trim()) {
+                    const newProject = {
+                      id: Date.now().toString(),
+                      title: newProjectTitle.trim(),
+                      tasks: [],
+                    };
+                    setProjects([newProject, ...projects]);
+                    setNewProjectTitle("");
+                    setIsModalVisible(false);
+                  }
+                }}
+              >
+                <Text style={styles.add}>Add</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <FlatList
         data={projects}
         keyExtractor={(item) => item.id}
         renderItem={renderProject}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>
+            No projects yet.
+          </Text>
+        }
         style={{ marginTop: 16 }}
       />
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setIsModalVisible(true)}
+      >
+        <AntDesign name="pluscircle" size={56} color="#007AFF" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -163,6 +211,44 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     marginBottom: 10,
+  },
+  fab: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    marginHorizontal: 32,
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  add: {
+    color: "green",
+    fontWeight: "bold",
+    fontSize: 16,
+    padding: 10,
+  },
+  cancel: {
+    color: "red",
+    fontSize: 16,
+    padding: 10,
+  },
+  emptyText: {
+    textAlign: "center",
+    marginTop: 40,
+    fontSize: 16,
+    color: "#888",
   },
 });
 
