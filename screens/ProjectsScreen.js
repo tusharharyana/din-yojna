@@ -12,6 +12,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { saveProjects, loadProjects } from "../utils/storage";
+import { Swipeable } from "react-native-gesture-handler";
 
 const initialProjects = [
   {
@@ -66,31 +67,33 @@ const ProjectsScreen = ({ navigation }) => {
     const { summary, status } = getStatus(item.tasks);
 
     return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() =>
-          navigation.navigate("ProjectDetails", {
-            project: item,
-            updateProject: (updatedProject) => {
-              const updatedList = projects.map((p) =>
-                p.id === updatedProject.id ? updatedProject : p
-              );
-              setProjects(updatedList);
-            },
-          })
-        }
-      >
-        <Text style={styles.title}>{item.title}</Text>
-        <Text>{summary}</Text>
-        <Text
-          style={[
-            styles.status,
-            status === "Completed" ? styles.green : styles.orange,
-          ]}
+      <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() =>
+            navigation.navigate("ProjectDetails", {
+              project: item,
+              updateProject: (updatedProject) => {
+                const updatedList = projects.map((p) =>
+                  p.id === updatedProject.id ? updatedProject : p
+                );
+                setProjects(updatedList);
+              },
+            })
+          }
         >
-          {status}
-        </Text>
-      </TouchableOpacity>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text>{summary}</Text>
+          <View
+            style={[
+              styles.badge,
+              status === "Completed" ? styles.greenBg : styles.orangeBg,
+            ]}
+          >
+            <Text style={styles.badgeText}>{status}</Text>
+          </View>
+        </TouchableOpacity>
+      </Swipeable>
     );
   };
 
@@ -105,6 +108,20 @@ const ProjectsScreen = ({ navigation }) => {
 
     setProjects([newProject, ...projects]);
     setNewProjectTitle("");
+  };
+
+  const renderRightActions = (id) => (
+    <TouchableOpacity
+      onPress={() => deleteProject(id)}
+      style={styles.deleteButton}
+    >
+      <Text style={styles.deleteText}>Delete</Text>
+    </TouchableOpacity>
+  );
+
+  const deleteProject = (id) => {
+    const filtered = projects.filter((p) => p.id !== id);
+    setProjects(filtered);
   };
 
   return (
@@ -158,9 +175,7 @@ const ProjectsScreen = ({ navigation }) => {
         keyExtractor={(item) => item.id}
         renderItem={renderProject}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            No projects yet.
-          </Text>
+          <Text style={styles.emptyText}>No projects yet.</Text>
         }
         style={{ marginTop: 16 }}
       />
@@ -249,6 +264,36 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 16,
     color: "#888",
+  },
+  badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    alignSelf: "flex-start",
+    marginTop: 8,
+  },
+  badgeText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  greenBg: {
+    backgroundColor: "green",
+  },
+  orangeBg: {
+    backgroundColor: "orange",
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingHorizontal: 20,
+    marginBottom: 12,
+    borderRadius: 10,
+  },
+
+  deleteText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
