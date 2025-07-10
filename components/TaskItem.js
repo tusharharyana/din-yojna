@@ -20,7 +20,17 @@ const TaskItem = ({ task, onToggle, onDelete, onRename }) => {
         onLongPress={() => onRename(task.id, task.title)}
       >
         <View style={[styles.taskItem, task.completed && styles.completed]}>
-          <View style={{ flex: 1 }}>
+          <View style={styles.taskTopRow}>
+            <Text style={styles.meta}>
+              Added: {new Date(task.createdAt).toLocaleString()}
+            </Text>
+            {task.completed && task.completedAt && (
+              <Text style={styles.meta}>
+                Done: {new Date(task.completedAt).toLocaleString()}
+              </Text>
+            )}
+          </View>
+          <View style={styles.taskBottomRow}>
             <Text
               style={[
                 styles.taskText,
@@ -29,25 +39,15 @@ const TaskItem = ({ task, onToggle, onDelete, onRename }) => {
             >
               {task.title}
             </Text>
-
-            <Text style={styles.meta}>
-              Added : {new Date(task.createdAt).toLocaleString()}
-            </Text>
-
-            {task.completed && task.completedAt && (
-              <Text style={styles.meta}>
-                Done   : {new Date(task.completedAt).toLocaleString()}
-              </Text>
+            {task.completed && (
+              <AntDesign
+                name="checkcircle"
+                size={20}
+                color="green"
+                style={{ marginLeft: 8 }}
+              />
             )}
           </View>
-          {task.completed && (
-            <AntDesign
-              name="checkcircle"
-              size={20}
-              color="green"
-              style={{ marginLeft: 8 }}
-            />
-          )}
         </View>
       </TouchableOpacity>
     </Swipeable>
@@ -56,11 +56,8 @@ const TaskItem = ({ task, onToggle, onDelete, onRename }) => {
 
 const styles = StyleSheet.create({
   taskItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     backgroundColor: "#f9f9f9",
-    padding: 14,
+    padding: 12,
     marginBottom: 10,
     borderRadius: 8,
     borderLeftWidth: 4,
@@ -69,6 +66,16 @@ const styles = StyleSheet.create({
   completed: {
     backgroundColor: "#d4f8c4",
     borderLeftColor: "green",
+  },
+  taskTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
+  taskBottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   taskText: {
     fontSize: 16,
@@ -92,8 +99,7 @@ const styles = StyleSheet.create({
   },
   meta: {
     fontSize: 12,
-    color: "#888",
-    marginTop: 4,
+    color: "#666",
   },
 });
 
