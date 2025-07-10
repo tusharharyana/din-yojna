@@ -5,9 +5,11 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  TextInput,
+  Button,
 } from "react-native";
 import { useEffect } from "react";
-import { saveProjects, loadProjects } from "../utils/Storage";
+import { saveProjects, loadProjects } from "../utils/storage";
 
 const initialProjects = [
   {
@@ -30,6 +32,7 @@ const initialProjects = [
 
 const ProjectsScreen = ({ navigation }) => {
   const [projects, setProjects] = useState([]);
+  const [newProjectTitle, setNewProjectTitle] = useState("");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -88,13 +91,36 @@ const ProjectsScreen = ({ navigation }) => {
     );
   };
 
+  const addProject = () => {
+    if (!newProjectTitle.trim()) return;
+
+    const newProject = {
+      id: Date.now().toString(),
+      title: newProjectTitle.trim(),
+      tasks: [],
+    };
+
+    setProjects([newProject, ...projects]);
+    setNewProjectTitle("");
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>📋 DinYojna</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Enter new project name"
+        value={newProjectTitle}
+        onChangeText={setNewProjectTitle}
+      />
+      <Button title="Add Project" onPress={addProject} />
+
       <FlatList
         data={projects}
         keyExtractor={(item) => item.id}
         renderItem={renderProject}
+        style={{ marginTop: 16 }}
       />
     </View>
   );
@@ -130,6 +156,13 @@ const styles = StyleSheet.create({
   },
   orange: {
     color: "orange",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 10,
   },
 });
 
