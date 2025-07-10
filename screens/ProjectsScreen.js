@@ -18,6 +18,8 @@ const ProjectsScreen = ({ navigation }) => {
   const [projects, setProjects] = useState([]);
   const [newProjectTitle, setNewProjectTitle] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -116,15 +118,32 @@ const ProjectsScreen = ({ navigation }) => {
     setProjects(filtered);
   };
 
-  const sortedProjects = [...projects].sort((a, b) => {
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch = project.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+
+    const done = project.tasks.filter((t) => t.completed).length;
+    const total = project.tasks.length;
+    const isCompleted = total > 0 && done === total;
+
+    const matchesFilter =
+      filterStatus === "All" ||
+      (filterStatus === "Completed" && isCompleted) ||
+      (filterStatus === "In Progress" && !isCompleted);
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
     const aCompleted = a.tasks.length && a.tasks.every((t) => t.completed);
     const bCompleted = b.tasks.length && b.tasks.every((t) => t.completed);
-
-    if (aCompleted !== bCompleted) {
-      return aCompleted ? 1 : -1;
-    }
-    return Number(b.id) - Number(a.id);
-  });
+    return aCompleted === bCompleted
+      ? Number(b.id) - Number(a.id)
+      : aCompleted
+      ? 1
+      : -1;
+  });  
 
   return (
     <View style={styles.container}>
@@ -161,6 +180,33 @@ const ProjectsScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search projects..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+      <View style={styles.filterRow}>
+        {["All", "Completed", "In Progress"].map((status) => (
+          <TouchableOpacity
+            key={status}
+            onPress={() => setFilterStatus(status)}
+            style={[
+              styles.filterButton,
+              filterStatus === status && styles.filterButtonActive,
+            ]}
+          >
+            <Text
+              style={[
+                styles.filterText,
+                filterStatus === status && styles.filterTextActive,
+              ]}
+            >
+              {status}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <FlatList
         data={sortedProjects}

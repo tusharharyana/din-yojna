@@ -114,4 +114,35 @@ export default StyleSheet.create({
     fontSize: 12,
     color: "#666",
   },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+    marginHorizontal: 16,
+    marginTop: 16,
+    backgroundColor: "#fff",
+  },
+  filterRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 10,
+    marginHorizontal: 16,
+  },
+  filterButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    backgroundColor: "#eee",
+  },
+  filterButtonActive: {
+    backgroundColor: "#007AFF",
+  },
+  filterText: {
+    color: "#333",
+    fontWeight: "500",
+  },
+  filterTextActive: {
+    color: "#fff",
+  },
 });
