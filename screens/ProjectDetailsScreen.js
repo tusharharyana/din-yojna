@@ -4,10 +4,11 @@ import {
   Text,
   FlatList,
   TextInput,
-  Button,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import { Swipeable } from "react-native-gesture-handler";
 
 const ProjectDetailsScreen = ({ route }) => {
   const { project, updateProject } = route.params;
@@ -40,39 +41,77 @@ const ProjectDetailsScreen = ({ route }) => {
   };
 
   const renderTask = ({ item }) => (
-    <TouchableOpacity onPress={() => toggleTask(item.id)}>
-      <View style={[styles.taskItem, item.completed && styles.completed]}>
-        <Text style={styles.taskText}>
-          {item.title} {item.completed ? "✔️" : ""}
-        </Text>
-      </View>
-    </TouchableOpacity>
+    <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+      <TouchableOpacity onPress={() => toggleTask(item.id)}>
+        <View style={[styles.taskItem, item.completed && styles.completed]}>
+          <Text
+            style={[
+              styles.taskText,
+              item.completed && styles.taskTextCompleted,
+            ]}
+          >
+            {item.title}
+          </Text>
+          {item.completed && (
+            <AntDesign name="checkcircle" size={20} color="green" />
+          )}
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
   );
+  
 
   const isCompleted = tasks.length > 0 && tasks.every((t) => t.completed);
-    const status = isCompleted
-    ? "Project Completed"
-    : "In Progress";
+  const status = isCompleted ? "Completed" : "In Progress";
+
+  const deleteTask = (taskId) => {
+    const filtered = tasks.filter((t) => t.id !== taskId);
+    updateAndSync(filtered);
+  };
+
+  const renderRightActions = (taskId) => (
+    <TouchableOpacity
+      onPress={() => deleteTask(taskId)}
+      style={styles.taskDeleteButton}
+    >
+      <Text style={styles.taskDeleteText}>Delete</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>{project.title}</Text>
-      <Text style={styles.status}>{status}</Text>
+      <View
+        style={[
+          styles.statusBadge,
+          isCompleted ? styles.greenBg : styles.orangeBg,
+        ]}
+      >
+        <Text style={styles.statusText}>{status}</Text>
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Add a task..."
-        value={newTask}
-        onChangeText={setNewTask}
-      />
-      <Button title="Add Task" onPress={addTask} />
+      <View style={styles.inputRow}>
+        <TextInput
+          style={styles.input}
+          placeholder="Add a task..."
+          value={newTask}
+          onChangeText={setNewTask}
+        />
+        <TouchableOpacity onPress={addTask} style={styles.addButton}>
+          <AntDesign name="plus" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
 
-      <FlatList
-        data={tasks}
-        keyExtractor={(item) => item.id}
-        renderItem={renderTask}
-        style={{ marginTop: 20 }}
-      />
+      {tasks.length === 0 ? (
+        <Text style={styles.emptyText}>No tasks yet. Add one above! 💡</Text>
+      ) : (
+        <FlatList
+          data={tasks}
+          keyExtractor={(item) => item.id}
+          renderItem={renderTask}
+          contentContainerStyle={{ paddingBottom: 100 }}
+        />
+      )}
     </View>
   );
 };
@@ -83,33 +122,85 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   heading: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 8,
   },
-  status: {
-    fontSize: 16,
+  statusBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  greenBg: {
+    backgroundColor: "green",
+  },
+  orangeBg: {
+    backgroundColor: "orange",
+  },
+  statusText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
-    color: "#555",
   },
   input: {
-    borderColor: "#aaa",
+    flex: 1,
+    borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 6,
+    borderRadius: 8,
     padding: 10,
-    marginBottom: 10,
+    marginRight: 10,
+  },
+  addButton: {
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 8,
   },
   taskItem: {
-    backgroundColor: "#f0f0f0",
-    padding: 12,
-    marginBottom: 8,
-    borderRadius: 6,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f9f9f9",
+    padding: 14,
+    marginBottom: 10,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#ccc",
   },
   completed: {
-    backgroundColor: "#c9f7c3",
+    backgroundColor: "#d4f8c4",
+    borderLeftColor: "green",
   },
   taskText: {
     fontSize: 16,
+    flex: 1,
+  },
+  taskTextCompleted: {
+    textDecorationLine: "line-through",
+    color: "gray",
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#888",
+    marginTop: 30,
+    fontSize: 16,
+  },
+  taskDeleteButton: {
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingHorizontal: 20,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
+  taskDeleteText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
