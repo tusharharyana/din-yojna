@@ -57,9 +57,10 @@ const ProjectsScreen = ({ navigation }) => {
   const getStatus = (tasks) => {
     const done = tasks.filter((t) => t.completed).length;
     const total = tasks.length;
+    const isCompleted = total > 0 && done === total;
     return {
       summary: `${done} of ${total} done`,
-      status: done === total ? "Completed" : "In Progress",
+      status: isCompleted ? "Completed" : "In Progress",
     };
   };
 
@@ -124,6 +125,16 @@ const ProjectsScreen = ({ navigation }) => {
     setProjects(filtered);
   };
 
+  const sortedProjects = [...projects].sort((a, b) => {
+    const aCompleted = a.tasks.length && a.tasks.every((t) => t.completed);
+    const bCompleted = b.tasks.length && b.tasks.every((t) => t.completed);
+
+    if (aCompleted !== bCompleted) {
+      return aCompleted ? 1 : -1;
+    }
+    return Number(b.id) - Number(a.id);
+  });
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Din Yojna</Text>
@@ -171,7 +182,7 @@ const ProjectsScreen = ({ navigation }) => {
       </Modal>
 
       <FlatList
-        data={projects}
+        data={sortedProjects}
         keyExtractor={(item) => item.id}
         renderItem={renderProject}
         ListEmptyComponent={

@@ -49,7 +49,8 @@ const ProjectDetailsScreen = ({ route }) => {
     </TouchableOpacity>
   );
 
-  const status = tasks.every((t) => t.completed)
+  const isCompleted = tasks.length > 0 && tasks.every((t) => t.completed);
+    const status = isCompleted
     ? "Project Completed"
     : "In Progress";
 
