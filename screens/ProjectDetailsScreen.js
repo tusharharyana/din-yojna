@@ -115,8 +115,8 @@ const ProjectDetailsScreen = ({ route }) => {
       >
         <Text style={styles.heading}>{project.title}</Text>
       </TouchableOpacity>
-      <View style={styles.metaBox}>
-        <View style={styles.metaRow}>
+      <View style={styles.metaRowCombined}>
+        <View style={styles.metaItem}>
           <Text style={styles.metaLabel}>Created:</Text>
           <Text style={styles.metaValue}>
             {new Date(project.createdAt).toLocaleString()}
@@ -124,7 +124,7 @@ const ProjectDetailsScreen = ({ route }) => {
         </View>
 
         {project.completedAt && (
-          <View style={styles.metaRow}>
+          <View style={styles.metaItem}>
             <Text style={styles.metaLabel}>Completed:</Text>
             <Text style={styles.metaValue}>
               {new Date(project.completedAt).toLocaleString()}

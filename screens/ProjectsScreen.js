@@ -128,8 +128,6 @@ const ProjectsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Din Yojna</Text>
-
       <Modal
         visible={isModalVisible}
         transparent
