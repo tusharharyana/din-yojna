@@ -10,16 +10,21 @@ import {
 } from "react-native";
 
 const ProjectDetailsScreen = ({ route }) => {
-  const { project } = route.params; // Passed from ProjectsScreen
+  const { project, updateProject } = route.params;
   const [tasks, setTasks] = useState(project.tasks);
   const [newTask, setNewTask] = useState("");
 
+  const updateAndSync = (updatedTasks) => {
+    setTasks(updatedTasks);
+    const updatedProject = { ...project, tasks: updatedTasks };
+    updateProject(updatedProject);
+  };
+
   const toggleTask = (taskId) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
+    const updated = tasks.map((task) =>
+      task.id === taskId ? { ...task, completed: !task.completed } : task
     );
+    updateAndSync(updated);
   };
 
   const addTask = () => {
@@ -29,7 +34,8 @@ const ProjectDetailsScreen = ({ route }) => {
       title: newTask.trim(),
       completed: false,
     };
-    setTasks([...tasks, newTaskObj]);
+    const updated = [...tasks, newTaskObj];
+    updateAndSync(updated);
     setNewTask("");
   };
 
@@ -44,8 +50,8 @@ const ProjectDetailsScreen = ({ route }) => {
   );
 
   const status = tasks.every((t) => t.completed)
-    ? "✅ Project Completed"
-    : "🚧 In Progress";
+    ? "Project Completed"
+    : "In Progress";
 
   return (
     <View style={styles.container}>

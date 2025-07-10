@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { useEffect } from "react";
+import { saveProjects, loadProjects } from "../utils/Storage";
 
 const initialProjects = [
   {
@@ -27,7 +29,23 @@ const initialProjects = [
 ];
 
 const ProjectsScreen = ({ navigation }) => {
-  const [projects, setProjects] = useState(initialProjects);
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const saved = await loadProjects();
+      if (saved.length) {
+        setProjects(saved);
+      } else {
+        setProjects(initialProjects);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    saveProjects(projects);
+  }, [projects]);
 
   const getStatus = (tasks) => {
     const done = tasks.filter((t) => t.completed).length;
@@ -44,7 +62,17 @@ const ProjectsScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate("ProjectDetails", { project: item })}
+        onPress={() =>
+          navigation.navigate("ProjectDetails", {
+            project: item,
+            updateProject: (updatedProject) => {
+              const updatedList = projects.map((p) =>
+                p.id === updatedProject.id ? updatedProject : p
+              );
+              setProjects(updatedList);
+            },
+          })
+        }
       >
         <Text style={styles.title}>{item.title}</Text>
         <Text>{summary}</Text>
