@@ -20,16 +20,33 @@ const TaskItem = ({ task, onToggle, onDelete, onRename }) => {
         onLongPress={() => onRename(task.id, task.title)}
       >
         <View style={[styles.taskItem, task.completed && styles.completed]}>
-          <Text
-            style={[
-              styles.taskText,
-              task.completed && styles.taskTextCompleted,
-            ]}
-          >
-            {task.title}
-          </Text>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[
+                styles.taskText,
+                task.completed && styles.taskTextCompleted,
+              ]}
+            >
+              {task.title}
+            </Text>
+
+            <Text style={styles.meta}>
+              Added : {new Date(task.createdAt).toLocaleString()}
+            </Text>
+
+            {task.completed && task.completedAt && (
+              <Text style={styles.meta}>
+                Done   : {new Date(task.completedAt).toLocaleString()}
+              </Text>
+            )}
+          </View>
           {task.completed && (
-            <AntDesign name="checkcircle" size={20} color="green" />
+            <AntDesign
+              name="checkcircle"
+              size={20}
+              color="green"
+              style={{ marginLeft: 8 }}
+            />
           )}
         </View>
       </TouchableOpacity>
@@ -72,6 +89,11 @@ const styles = StyleSheet.create({
   deleteText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  meta: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
   },
 });
 

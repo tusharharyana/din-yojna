@@ -14,25 +14,6 @@ import { saveProjects, loadProjects } from "../utils/storage";
 import { Swipeable } from "react-native-gesture-handler";
 import styles from "../styles/projectsStyles";
 
-const initialProjects = [
-  {
-    id: "1",
-    title: "React Native Basics",
-    tasks: [
-      { id: "t1", title: "Install Expo", completed: true },
-      { id: "t2", title: "Create Project", completed: false },
-    ],
-  },
-  {
-    id: "2",
-    title: "Grocery Shopping",
-    tasks: [
-      { id: "t3", title: "Buy milk", completed: true },
-      { id: "t4", title: "Buy vegetables", completed: true },
-    ],
-  },
-];
-
 const ProjectsScreen = ({ navigation }) => {
   const [projects, setProjects] = useState([]);
   const [newProjectTitle, setNewProjectTitle] = useState("");
@@ -41,10 +22,8 @@ const ProjectsScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchProjects = async () => {
       const saved = await loadProjects();
-      if (saved.length) {
+      if (Array.isArray(saved)) {
         setProjects(saved);
-      } else {
-        setProjects(initialProjects);
       }
     };
     fetchProjects();
@@ -105,6 +84,8 @@ const ProjectsScreen = ({ navigation }) => {
       id: Date.now().toString(),
       title: newProjectTitle.trim(),
       tasks: [],
+      createdAt: new Date().toISOString(),
+      completedAt: null,
     };
 
     setProjects([newProject, ...projects]);
@@ -162,16 +143,8 @@ const ProjectsScreen = ({ navigation }) => {
               </Pressable>
               <Pressable
                 onPress={() => {
-                  if (newProjectTitle.trim()) {
-                    const newProject = {
-                      id: Date.now().toString(),
-                      title: newProjectTitle.trim(),
-                      tasks: [],
-                    };
-                    setProjects([newProject, ...projects]);
-                    setNewProjectTitle("");
-                    setIsModalVisible(false);
-                  }
+                  addProject();
+                  setIsModalVisible(false);
                 }}
               >
                 <Text style={styles.add}>Add</Text>

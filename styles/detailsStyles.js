@@ -132,4 +132,18 @@ export default StyleSheet.create({
     fontSize: 16,
     color: "#000",
   },
+  meta: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 10,
+  },
+  dateBox: {
+    alignItems: "flex-end",
+  },
 });

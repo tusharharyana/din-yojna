@@ -21,13 +21,25 @@ const ProjectDetailsScreen = ({ route }) => {
 
   const updateAndSync = (updatedTasks) => {
     setTasks(updatedTasks);
-    const updatedProject = { ...project, tasks: updatedTasks };
+    const allDone =
+      updatedTasks.length > 0 && updatedTasks.every((t) => t.completed);
+    const updatedProject = {
+      ...project,
+      tasks: updatedTasks,
+      completedAt: allDone ? new Date().toISOString() : null,
+    };
     updateProject(updatedProject);
   };
 
   const toggleTask = (taskId) => {
     const updated = tasks.map((task) =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
+      task.id === taskId
+        ? {
+            ...task,
+            completed: !task.completed,
+            completedAt: !task.completed ? new Date().toISOString() : null,
+          }
+        : task
     );
     updateAndSync(updated);
   };
@@ -38,6 +50,8 @@ const ProjectDetailsScreen = ({ route }) => {
       id: Date.now().toString(),
       title: newTask.trim(),
       completed: false,
+      createdAt: new Date().toISOString(),
+      completedAt: null,
     };
     const updated = [...tasks, newTaskObj];
     updateAndSync(updated);
@@ -76,7 +90,6 @@ const ProjectDetailsScreen = ({ route }) => {
       onRename={openRenameModal}
     />
   );
-  
 
   const isCompleted = tasks.length > 0 && tasks.every((t) => t.completed);
   const status = isCompleted ? "Completed" : "In Progress";
@@ -103,6 +116,16 @@ const ProjectDetailsScreen = ({ route }) => {
         <Text style={styles.heading}>{project.title}</Text>
       </TouchableOpacity>
 
+      <View style={styles.dateBox}>
+        <Text style={styles.meta}>
+          Created: {new Date(project.createdAt).toLocaleString()}
+        </Text>
+        {project.completedAt && (
+          <Text style={styles.meta}>
+            Completed: {new Date(project.completedAt).toLocaleString()}
+          </Text>
+        )}
+      </View>
       <View
         style={[
           styles.statusBadge,
