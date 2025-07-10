@@ -146,4 +146,23 @@ export default StyleSheet.create({
   dateBox: {
     alignItems: "flex-end",
   },
+  metaBox: {
+    alignSelf: "flex-end",
+    alignItems: "flex-end",
+    marginBottom: 8,
+  },
+  metaRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 4,
+  },
+  metaLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#444",
+  },
+  metaValue: {
+    fontSize: 13,
+    color: "#666",
+  },
 });

@@ -115,15 +115,21 @@ const ProjectDetailsScreen = ({ route }) => {
       >
         <Text style={styles.heading}>{project.title}</Text>
       </TouchableOpacity>
-
-      <View style={styles.dateBox}>
-        <Text style={styles.meta}>
-          Created: {new Date(project.createdAt).toLocaleString()}
-        </Text>
-        {project.completedAt && (
-          <Text style={styles.meta}>
-            Completed: {new Date(project.completedAt).toLocaleString()}
+      <View style={styles.metaBox}>
+        <View style={styles.metaRow}>
+          <Text style={styles.metaLabel}>Created:</Text>
+          <Text style={styles.metaValue}>
+            {new Date(project.createdAt).toLocaleString()}
           </Text>
+        </View>
+
+        {project.completedAt && (
+          <View style={styles.metaRow}>
+            <Text style={styles.metaLabel}>Completed:</Text>
+            <Text style={styles.metaValue}>
+              {new Date(project.completedAt).toLocaleString()}
+            </Text>
+          </View>
         )}
       </View>
       <View
